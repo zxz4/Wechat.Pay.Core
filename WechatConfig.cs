@@ -7,6 +7,9 @@ namespace Wechat.Pay.Core
     public class WechatConfig
     {
 
+
+        private X509Certificate2 platformCertificate;
+
         /// <summary>
         /// 初始化支付设置
         /// </summary>
@@ -27,7 +30,7 @@ namespace Wechat.Pay.Core
         /// <summary>
         /// 商户号
         /// </summary>
-        internal string MerchantId { get; private set; }
+        public string MerchantId { get; private set; }
 
 
         /// <summary>
@@ -43,6 +46,24 @@ namespace Wechat.Pay.Core
 
 
 
+        /// <summary>
+        /// 平台证书
+        /// </summary>
+        internal X509Certificate2 PlatformCertificate
+        {
+            get
+            {
+                lock (platformCertificate)
+                {
+                    if (platformCertificate == null)
+                    {
+
+                        platformCertificate = new X509Certificate2();
+                    }
+                }
+                return platformCertificate;
+            }
+        }
 
     }
 }

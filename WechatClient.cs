@@ -4,35 +4,54 @@ using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Wechat.Pay.Core.Interface;
+using Wechat.Pay.Core.Request;
+using Wechat.Pay.Core.Response;
 
 namespace Wechat.Pay.Core
 {
-    public class WechatClient
+    public sealed class WechatClient : IClient
     {
 
         private readonly WechatConfig config;
+
+        private static readonly JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions { IgnoreNullValues = true };
 
         public WechatClient(WechatConfig config)
         {
             this.config = config;
         }
 
-        public Task<HttpResponseMessage> GetAsync()
+        public async Task<T> ExecuteAsync<T>(SDKRequest<T> request) where T : SDKResponse
         {
-            HttpClient client = new HttpClient(new HttpHandler(config.MerchantId, config.Certificate));
 
-            return client.GetAsync("https://api.mch.weixin.qq.com/v3/certificates");
+            using (HttpClient client = new HttpClient(new HttpHandler(config.MerchantId, config.Certificate)))
+            {
+                using var response = (request.RequestMethod()) switch
+                {
+                    "GET" => await client.GetAsync(request.RequestUrl()),
+                    "POST" => await client.PostAsync(request.RequestUrl(), new StringContent(JsonSerializer.Serialize(request),Encoding.UTF8,"application/json")),
+                    _ => throw new ArgumentException("Unsupported HTTP method!"),
+                };
+
+                if (response != null)
+                {
+                    var repContent = await response.Content.ReadAsStringAsync();
+
+                    return JsonSerializer.Deserialize<T>(repContent, jsonSerializerOptions);
+                }
+            }
+
+            return null;
         }
-       
     }
 
 
     internal class HttpHandler : DelegatingHandler
     {
-
-        
         private readonly string merchantId;
         private readonly X509Certificate2 certificate;
 
@@ -49,10 +68,10 @@ namespace Wechat.Pay.Core
             CancellationToken cancellationToken)
         {
             var auth = await BuildAuthAsync(request);
- 
+
             request.Headers.Authorization = new AuthenticationHeaderValue("WECHATPAY2-SHA256-RSA2048", auth);
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            request.Headers.UserAgent.Add(new ProductInfoHeaderValue(new ProductHeaderValue("Unknown")));
+            request.Headers.UserAgent.Add(new ProductInfoHeaderValue(new ProductHeaderValue("dotnet", "3.1.8")));
 
             return await base.SendAsync(request, cancellationToken);
         }
