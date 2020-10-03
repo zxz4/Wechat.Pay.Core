@@ -1,30 +1,40 @@
 ﻿using System;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Wechat.Pay.Core
 {
-    public class WechatConfig
+    public class WechatOptions
     {
 
-
-        private X509Certificate2 platformCertificate;
-
         /// <summary>
-        /// 初始化支付设置
+        /// 初始化支付设置(直连方式)
         /// </summary>
         /// <param name="merchantId">商户号</param>
         /// <param name="certificatePath">p12证书所在路径</param>
         /// <param name="apiSecret">apiv3密钥</param>
 
-        public WechatConfig(string merchantId,string certificatePath,string apiSecret)
+        public WechatOptions(string appId, string merchantId, string certificatePath, string apiSecret)
         {
+
+            if (string.IsNullOrWhiteSpace(appId) || string.IsNullOrWhiteSpace(merchantId) || string.IsNullOrWhiteSpace(certificatePath) || string.IsNullOrWhiteSpace(apiSecret)) 
+            {
+                throw new ArgumentException();
+            }
+
+            AppId = appId;
+
             MerchantId = merchantId;
 
             APISecret = apiSecret;
 
-            Certificate = new X509Certificate2(certificatePath,merchantId);
+            Certificate = new X509Certificate2(certificatePath, merchantId);
         }
+
+
+        /// <summary>
+        /// 服务商公众号
+        /// </summary>
+        public string AppId { get; set; }
 
 
         /// <summary>
@@ -43,27 +53,6 @@ namespace Wechat.Pay.Core
         /// APIV3密钥
         /// </summary>
         internal string APISecret { get; private set; }
-
-
-
-        /// <summary>
-        /// 平台证书
-        /// </summary>
-        internal X509Certificate2 PlatformCertificate
-        {
-            get
-            {
-                lock (platformCertificate)
-                {
-                    if (platformCertificate == null)
-                    {
-
-                        platformCertificate = new X509Certificate2();
-                    }
-                }
-                return platformCertificate;
-            }
-        }
 
     }
 }

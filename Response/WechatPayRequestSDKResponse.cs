@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security;
-using System.Text;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Wechat.Pay.Core.Response
 {
@@ -10,9 +6,8 @@ namespace Wechat.Pay.Core.Response
     /// <summary>
     /// 响应基类
     /// </summary>
-    public abstract class SDKResponse
+    public abstract class WechatPayRequestSDKResponse
     {
-
 
         #region 通用错误信息
 
@@ -20,7 +15,7 @@ namespace Wechat.Pay.Core.Response
         /// 详细错误码
         /// </summary>
         [JsonPropertyName("code")]
-        public string Code { get; set; } = "200";
+        public string Code { get; set; }
 
         /// <summary>
         /// 错误描述
@@ -39,7 +34,6 @@ namespace Wechat.Pay.Core.Response
         #endregion
 
     }
-
 
     /// <summary>
     /// 具体错误原因

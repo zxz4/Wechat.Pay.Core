@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Text.Json.Serialization;
+using Wechat.Pay.Core.Interface;
+using Wechat.Pay.Core.Model;
 using Wechat.Pay.Core.Response;
+
 
 namespace Wechat.Pay.Core.Request
 {
@@ -9,8 +12,12 @@ namespace Wechat.Pay.Core.Request
     /// JSAPI/小程序下单API
     /// https://pay.weixin.qq.com/wiki/doc/apiv3/wxpay/pay/transactions/chapter3_2.shtml
     /// </summary>
-    public class JSAPITransaction : SDKRequest<JSAPITransactionResponse>
+    public class WechatPayJSAPITransaction : IWechatPayRequestSDK<WechatPayJSAPITransactionResponse>
     {
+
+
+        private DateTimeOffset expireTime = default;
+
         /// <summary>
         /// 公众号ID
         /// 直连商户申请的公众号或移动应用appid。
@@ -47,7 +54,21 @@ namespace Wechat.Pay.Core.Request
         /// 示例值：2018-06-08T10:34:56+08:00
         /// </summary>
         [JsonPropertyName("time_expire")]
-        public DateTimeOffset? TimeExpire { get; set; } 
+        public string TimeExpire
+        {
+            get
+            {
+                if (expireTime == default)
+
+                    return null;
+
+                return expireTime.ToString("yyyy-MM-ddTHH:mm:sszzz");
+            }
+            set
+            {
+                DateTimeOffset.TryParse(value,out expireTime);
+            }
+        } 
 
         /// <summary>
         /// 附加数据，在查询API和支付通知中原样返回，可作为自定义参数使用
@@ -83,46 +104,20 @@ namespace Wechat.Pay.Core.Request
         [JsonPropertyName("payer")]
         public PayerInfo Payer { get; set; }
 
-        public override string RequestMethod()
+        public  string RequestMethod()
         {
             return "POST";
         }
 
-        public override string RequestUrl()
+        public  string RequestUrl()
         {
             return "https://api.mch.weixin.qq.com/v3/pay/transactions/jsapi";
         }
+
+        public bool ValidateResponse()
+        {
+            return false;
+        }
     }
 
-    /// <summary>
-    /// 订单金额信息
-    /// </summary>
-    public class Amount
-    {
-        /// <summary>
-        /// 订单总金额，单位为分。
-        /// 示例值：100
-        /// </summary>
-        [JsonPropertyName("total")]
-        public int Total { get; set; }
-
-        /// <summary>
-        /// 货币类型
-        /// CNY：人民币，境内商户号仅支持人民币。
-        /// </summary>
-        [JsonPropertyName("currency")]
-        public string Currency { get; private set; } = "CNY";
-    }
-
-    /// <summary>
-    /// 支付者信息
-    /// </summary>
-    public class PayerInfo
-    {
-        /// <summary>
-        /// 用户在直连商户appid下的唯一标识。
-        /// 示例值：oUpF8uMuAJO_M2pxb1Q9zNjWeS6o
-        /// </summary>
-        public string OpenId { get; set; }
-    }
 }
