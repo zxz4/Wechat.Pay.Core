@@ -86,7 +86,7 @@ namespace Wechat.Pay.Core.Extension
         /// <returns></returns>
         private static string BuildToken(string url, string method, string body, WechatOptions options)
         {
-            var uri = method.Equals("GET") ? new Uri(url).PathAndQuery : url;
+            var uri = new Uri(url).PathAndQuery ;
 
             long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
 

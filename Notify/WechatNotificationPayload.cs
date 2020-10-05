@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using Wechat.Pay.Core.Notify;
 
 namespace Wechat.Pay.Core.Response
@@ -8,7 +7,7 @@ namespace Wechat.Pay.Core.Response
     /// 通知报文
     /// https://pay.weixin.qq.com/wiki/doc/apiv3/wxpay/pay/transactions/chapter3_11.shtml
     /// </summary>
-    public class WechatNotificationPayload <T> where T: WechatPayNotification
+    public class WechatNotificationPayload<T> where T : WechatPayNotification
     {
         /// <summary>
         /// 通知ID
@@ -51,30 +50,7 @@ namespace Wechat.Pay.Core.Response
         [JsonPropertyName("summary")]
         public string Summary { get; set; }
 
-
-        /// <summary>
-        /// 原始内容
-        /// </summary>
         [JsonIgnore]
-        public string RawContent 
-        { 
-            get
-            {
-                if (string.IsNullOrWhiteSpace(RawContent))
-                {
-                    RawContent = JsonSerializer.Serialize(this);
-                }
-
-                return RawContent;
-            }
-
-            set
-            {
-                RawContent = value;
-            }
-        }
-
-
         /// <summary>
         /// 解密后的通知信息
         /// </summary>

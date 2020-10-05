@@ -73,7 +73,7 @@ namespace Wechat.Pay.Core
 
             try
             {
-                await ValidateSignAsync(header, notification.RawContent, options);
+                await ValidateSignAsync(header, JsonSerializer.Serialize(notification,notification.GetType()), options);
 
                 byte[] decryptRawContent;
 

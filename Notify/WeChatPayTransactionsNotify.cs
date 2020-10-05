@@ -9,7 +9,7 @@ namespace Wechat.Pay.Core.Notify
     /// 支付通知API
     /// https://pay.weixin.qq.com/wiki/doc/apiv3/wxpay/pay/transactions/chapter3_11.shtml
     /// </summary>
-    public class WeChatPayTransactionsNotify 
+    public class WeChatPayTransactionsNotify : WechatPayNotification
     {
         /// <summary>
         /// 公众号ID
