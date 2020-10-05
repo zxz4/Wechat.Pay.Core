@@ -123,7 +123,7 @@ namespace Wechat.Pay.Core.Extension
                 headers.Nonce = value.First();
             }
 
-            if (reponseHeader.TryGetValues("Wechatpay-Signature:", out value))
+            if (reponseHeader.TryGetValues("Wechatpay-Signature", out value))
             {
                 headers.Signature = value.First();
             }
